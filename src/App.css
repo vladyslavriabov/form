@@ -123,3 +123,9 @@ select {
   pointer-events: none;
   opacity: 0.3;
 }
+.Loader span {
+  color: rgb(83, 82, 82);
+  position: absolute;
+  right: 10px;
+  bottom: 10px;
+}

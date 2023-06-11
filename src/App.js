@@ -1,10 +1,11 @@
-import { useEffect, useState, useMemo } from "react";
+import { useEffect, useState } from "react";
 import "./App.css";
 import { useFormik } from "formik";
 import validationSchema from "./ValidationSchema";
 import FormInput from "./components/FormInput/FormInput";
 import FormList from "./components/FormList/FormList";
 import FormRadioGroup from "./components/FormRadioGroup/FormRadioGroup";
+import Loader from "./components/Loader/Loader";
 
 function App() {
   const formik = useFormik({
@@ -24,6 +25,12 @@ function App() {
       console.log(values);
     },
   });
+  const [loaded, setLoaded] = useState({
+    cities: false,
+    specialties: false,
+    doctors: false,
+    fetchError: false,
+  });
   const [cities, setCities] = useState([]);
   const [specialties, setSpecialties] = useState([]);
   const [doctors, setDoctors] = useState([]);
@@ -32,7 +39,7 @@ function App() {
   const [age, setAge] = useState("");
   const [filterForDoctors, setFilterForDoctors] = useState({});
 
-  const fetchData = async (url, setValue) => {
+  const fetchData = async (url, setValue, loadingData) => {
     try {
       const response = await fetch(url);
       if (!response.ok) {
@@ -40,8 +47,17 @@ function App() {
       }
       const data = await response.json();
       setValue(data);
+      setLoaded((prevObject) => ({
+        ...prevObject,
+        [loadingData]: true,
+      }));
+      console.log(loaded);
     } catch (error) {
       console.log(error);
+      setLoaded((prevObject) => ({
+        ...prevObject,
+        fetchError: true,
+      }));
     }
   };
 
@@ -79,7 +95,7 @@ function App() {
         if (HasSelectedValue[0].params) {
           if (HasSelectedValue[0].params.gender) {
             if (
-              formik.values.gender ==
+              formik.values.gender ===
               HasSelectedValue[0].params.gender.toLowerCase()
             ) {
               !formik.values.gender && (formik.values.doctor = "");
@@ -131,16 +147,20 @@ function App() {
   useEffect(() => {
     fetchData(
       "https://run.mocky.io/v3/9fcb58ca-d3dd-424b-873b-dd3c76f000f4",
-      setCities
+      setCities,
+      "cities"
     );
     fetchData(
       "https://run.mocky.io/v3/e8897b19-46a0-4124-8454-0938225ee9ca",
-      setSpecialties
+      setSpecialties,
+      "specialties"
     );
     fetchData(
       "https://run.mocky.io/v3/3d1c993c-cd8e-44c3-b1cb-585222859c21",
-      setDoctors
+      setDoctors,
+      "doctors"
     );
+    console.log(loaded);
   }, []);
 
   useEffect(() => {
@@ -204,7 +224,7 @@ function App() {
     let res = doctors.filter(function (item) {
       if (Object.keys(filterForDoctors).length < 1) return true;
       for (var key in filterForDoctors) {
-        if (item[key] === undefined || item[key] != filterForDoctors[key])
+        if (item[key] === undefined || item[key] !== filterForDoctors[key])
           return false;
       }
       return true;
@@ -291,65 +311,67 @@ function App() {
       type: "text",
       label: "Mobile Number",
       name: "mobilephone",
-      autoComplete: "email",
       mask: "999999999999",
       maskChar: "",
       autoComplete: "tel",
     },
   ];
   return (
-    <div className="form-wrapper">
-      <form onSubmit={formik.handleSubmit}>
-        {formStructure.map((item) => {
-          switch (item.component) {
-            case "FormInput":
-              return (
-                <FormInput
-                  key={item.id}
-                  {...item}
-                  onChange={formik.handleChange}
-                  value={formik.values[item.name]}
-                  onBlur={formik.handleBlur}
-                  error={formik.errors[item.name]}
-                  touched={formik.touched[item.name]}
-                />
-              );
-              break;
-            case "FormList":
-              return (
-                <FormList
-                  key={item.id}
-                  {...item}
-                  onChange={formik.handleChange}
-                  value={formik.values[item.name]}
-                  onBlur={formik.handleBlur}
-                  error={formik.errors[item.name]}
-                  touched={formik.touched[item.name]}
-                />
-              );
-              break;
-            case "FormRadioGroup":
-              return (
-                <FormRadioGroup
-                  key={item.id}
-                  {...item}
-                  onChange={formik.handleChange}
-                  onBlur={formik.handleBlur}
-                  value={formik.values[item.name]}
-                  error={formik.errors[item.name]}
-                  touched={formik.touched[item.name]}
-                />
-              );
-              break;
-            default:
-              return null;
-          }
-        })}
-        <button className="btn" type="submit">
-          Submit
-        </button>
-      </form>
-    </div>
+    <>
+      <div className="form-wrapper">
+        {loaded.cities && loaded.specialties && loaded.doctors ? (
+          <form onSubmit={formik.handleSubmit}>
+            {formStructure.map((item) => {
+              switch (item.component) {
+                case "FormInput":
+                  return (
+                    <FormInput
+                      key={item.id}
+                      {...item}
+                      onChange={formik.handleChange}
+                      value={formik.values[item.name]}
+                      onBlur={formik.handleBlur}
+                      error={formik.errors[item.name]}
+                      touched={formik.touched[item.name]}
+                    />
+                  );
+                case "FormList":
+                  return (
+                    <FormList
+                      key={item.id}
+                      {...item}
+                      onChange={formik.handleChange}
+                      value={formik.values[item.name]}
+                      onBlur={formik.handleBlur}
+                      error={formik.errors[item.name]}
+                      touched={formik.touched[item.name]}
+                    />
+                  );
+                case "FormRadioGroup":
+                  return (
+                    <FormRadioGroup
+                      key={item.id}
+                      {...item}
+                      onChange={formik.handleChange}
+                      onBlur={formik.handleBlur}
+                      value={formik.values[item.name]}
+                      error={formik.errors[item.name]}
+                      touched={formik.touched[item.name]}
+                    />
+                  );
+                default:
+                  return null;
+              }
+            })}
+            <button className="btn" type="submit">
+              Submit
+            </button>
+          </form>
+        ) : (
+          <Loader />
+        )}
+      </div>
+    </>
   );
 }
 
