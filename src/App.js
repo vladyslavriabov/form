@@ -52,7 +52,6 @@ function App() {
         ...prevObject,
         [loadingData]: true,
       }));
-      console.log(loaded);
     } catch (error) {
       console.log(error);
       setLoaded((prevObject) => ({
@@ -161,7 +160,6 @@ function App() {
       setDoctors,
       "doctors"
     );
-    console.log(loaded);
   }, []);
 
   useEffect(() => {
