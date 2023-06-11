@@ -1,0 +1,15 @@
+.error {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+.oops {
+  font-size: 54px;
+}
+.message {
+  margin-top: 10px;
+  font-size: 30px;
+}

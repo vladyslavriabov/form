@@ -102,7 +102,6 @@ input[type="radio"] {
   cursor: pointer;
 }
 select {
-  /* Reset */
   appearance: none;
   border: 0;
   outline: 0;

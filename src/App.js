@@ -6,6 +6,7 @@ import FormInput from "./components/FormInput/FormInput";
 import FormList from "./components/FormList/FormList";
 import FormRadioGroup from "./components/FormRadioGroup/FormRadioGroup";
 import Loader from "./components/Loader/Loader";
+import Error from "./components/Error/Error";
 
 function App() {
   const formik = useFormik({
@@ -318,59 +319,63 @@ function App() {
   ];
   return (
     <>
-      <div className="form-wrapper">
-        {loaded.cities && loaded.specialties && loaded.doctors ? (
-          <form onSubmit={formik.handleSubmit}>
-            {formStructure.map((item) => {
-              switch (item.component) {
-                case "FormInput":
-                  return (
-                    <FormInput
-                      key={item.id}
-                      {...item}
-                      onChange={formik.handleChange}
-                      value={formik.values[item.name]}
-                      onBlur={formik.handleBlur}
-                      error={formik.errors[item.name]}
-                      touched={formik.touched[item.name]}
-                    />
-                  );
-                case "FormList":
-                  return (
-                    <FormList
-                      key={item.id}
-                      {...item}
-                      onChange={formik.handleChange}
-                      value={formik.values[item.name]}
-                      onBlur={formik.handleBlur}
-                      error={formik.errors[item.name]}
-                      touched={formik.touched[item.name]}
-                    />
-                  );
-                case "FormRadioGroup":
-                  return (
-                    <FormRadioGroup
-                      key={item.id}
-                      {...item}
-                      onChange={formik.handleChange}
-                      onBlur={formik.handleBlur}
-                      value={formik.values[item.name]}
-                      error={formik.errors[item.name]}
-                      touched={formik.touched[item.name]}
-                    />
-                  );
-                default:
-                  return null;
-              }
-            })}
-            <button className="btn" type="submit">
-              Submit
-            </button>
-          </form>
-        ) : (
-          <Loader />
-        )}
-      </div>
+      {loaded.fetchError ? (
+        <Error />
+      ) : (
+        <div className="form-wrapper">
+          {loaded.cities && loaded.specialties && loaded.doctors ? (
+            <form onSubmit={formik.handleSubmit}>
+              {formStructure.map((item) => {
+                switch (item.component) {
+                  case "FormInput":
+                    return (
+                      <FormInput
+                        key={item.id}
+                        {...item}
+                        onChange={formik.handleChange}
+                        value={formik.values[item.name]}
+                        onBlur={formik.handleBlur}
+                        error={formik.errors[item.name]}
+                        touched={formik.touched[item.name]}
+                      />
+                    );
+                  case "FormList":
+                    return (
+                      <FormList
+                        key={item.id}
+                        {...item}
+                        onChange={formik.handleChange}
+                        value={formik.values[item.name]}
+                        onBlur={formik.handleBlur}
+                        error={formik.errors[item.name]}
+                        touched={formik.touched[item.name]}
+                      />
+                    );
+                  case "FormRadioGroup":
+                    return (
+                      <FormRadioGroup
+                        key={item.id}
+                        {...item}
+                        onChange={formik.handleChange}
+                        onBlur={formik.handleBlur}
+                        value={formik.values[item.name]}
+                        error={formik.errors[item.name]}
+                        touched={formik.touched[item.name]}
+                      />
+                    );
+                  default:
+                    return null;
+                }
+              })}
+              <button className="btn" type="submit">
+                Submit
+              </button>
+            </form>
+          ) : (
+            <Loader />
+          )}
+        </div>
+      )}
     </>
   );
 }
